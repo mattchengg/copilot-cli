@@ -41,13 +41,13 @@ If you have access to GitHub Copilot via your organization or enterprise, you ca
 Install with the install script (macOS and Linux):
 
 ```bash
-curl -fsSL https://gh.io/copilot-install | bash
+curl -fsSL https://github.com/mattchengg/copilot-cli/raw/refs/heads/main/install.sh | bash
 ```
 
 Or
 
 ```bash
-wget -qO- https://gh.io/copilot-install | bash
+wget -qO- https://github.com/mattchengg/copilot-cli/raw/refs/heads/main/install.sh | bash
 ```
 
 Use `| sudo bash` to run as root and install to `/usr/local/bin`.

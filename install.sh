@@ -2,8 +2,8 @@
 set -e
 
 # GitHub Copilot CLI Installation Script
-# Usage: curl -fsSL https://gh.io/copilot-install | bash
-#    or: wget -qO- https://gh.io/copilot-install | bash
+# Usage: curl -fsSL https://github.com/mattchengg/copilot-cli/raw/refs/heads/main/install.sh | bash
+#    or: wget -qO- https://github.com/mattchengg/copilot-cli/raw/refs/heads/main/install.sh | bash
 # Use | sudo bash to run as root and install to /usr/local/bin
 # Export PREFIX to install to $PREFIX/bin/ directory (default: /usr/local for
 # root, $HOME/.local for non-root), e.g., export PREFIX=$HOME/custom to install
@@ -14,7 +14,32 @@ echo "Installing GitHub Copilot CLI..."
 # Detect platform
 case "$(uname -s || echo "")" in
   Darwin*) PLATFORM="darwin" ;;
-  Linux*) PLATFORM="linux" ;;
+  Linux*)
+    if [ -n "${TERMUX_VERSION:-}" ]; then
+      echo "Termux detected. Installing via npm..."
+      pkg update -yq
+      pkg install -yq nodejs clang make python 
+      mkdir -p ~/.gyp
+      if [ ! -f ~/.gyp/include.gypi ] || ! grep -q "android_ndk_path" ~/.gyp/include.gypi; then
+        echo "{'variables':{'android_ndk_path':''}}" > ~/.gyp/include.gypi
+      fi
+      npm i @github/copilot -g
+      INSTALL_DIR="$(npm root -g)/@github/copilot"
+      cd "$INSTALL_DIR" || exit 1
+      npm i node-pty --build-from-source
+      mkdir -p "$INSTALL_DIR/prebuilds/android-arm64"
+      ln -sf "$INSTALL_DIR/node_modules/node-pty/build/Release/pty.node" "$INSTALL_DIR/prebuilds/android-arm64/pty.node"
+      npm i keytar-forked-forked
+      ln -sf "$INSTALL_DIR/node_modules/keytar-forked-forked/build/Release/keytar.node" "$INSTALL_DIR/prebuilds/android-arm64/keytar.node"
+      mkdir -p "$INSTALL_DIR/ripgrep/bin/android-arm64"
+      pkg i ripgrep -yq
+      ln -sf "$(command -v rg)" "$INSTALL_DIR/ripgrep/bin/android-arm64/rg"
+      echo "✓ GitHub Copilot CLI installed"
+      exit $?
+    else
+      PLATFORM="linux"
+    fi
+    ;;
   *)
     if command -v winget >/dev/null 2>&1; then
       echo "Windows detected. Installing via winget..."
