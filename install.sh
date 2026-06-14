@@ -18,7 +18,7 @@ case "$(uname -s || echo "")" in
     if [ -n "${TERMUX_VERSION:-}" ]; then
       echo "Termux detected. Installing via npm..."
       pkg update -yq
-      pkg install -yq nodejs clang make python 
+      pkg install -yq nodejs clang make python libsecret
       mkdir -p ~/.gyp
       if [ ! -f ~/.gyp/include.gypi ] || ! grep -q "android_ndk_path" ~/.gyp/include.gypi; then
         echo "{'variables':{'android_ndk_path':''}}" > ~/.gyp/include.gypi
