@@ -1,3 +1,909 @@
+## 1.0.62 - 2026-06-13
+
+- Ask and elicitation dialogs now scroll together with the timeline instead of taking over the screen, so a tall dialog no longer hides the agent's output — scroll up to read earlier output, then back down to the dialog
+- Keep blank lines between reasoning summary sections
+- Show user-typed colon terms in the search chip
+- Plugins can now ship extensions, making them installable via the plugin marketplace
+- Add content search, match highlighting, and n/N navigation in diff view
+- Add /app slash command to open the GitHub app or a browser fallback
+- Configure subagent model, reasoning effort, and context tier via user settings or the /subagents (also /agents) picker
+- PowerShell redirect paths no longer trigger content-exclusion refusals
+- WebSocket transport closes cleanly outside the Tokio runtime
+- Shell tool errors now explain when a shell ID was stopped, completed, or reclaimed
+- Voice runtime download dialog no longer reopens in a loop after an install failure
+- Make the MCP server config form easier to use with a picker-based flow
+- Show 'YOLO' (allow all) indicator in the footer and add allow-all state to custom statusLine.command
+- Press `/` on the Issues or Pull Requests tab to search GitHub with server-side filtering
+- Add session-scoped extensions and canvases
+- Allow SDK clients to configure session memory through session.create and session.resume
+- Automatically authenticate through corporate forward proxies using Kerberos/Negotiate (SPNEGO)
+- Add file tree sidebar and inline comment editor to the /diff view
+- Honor max_output_tokens for BYOK Responses providers
+- MCP server names with dots and slashes map to valid Responses API namespaces
+- Editor commands like `code-insiders --wait` launch correctly on Windows
+- Load skills from symlinked directories outside the configured root
+- Recover gracefully from oversized inline images instead of failing the turn
+- An image attachment rejected because vision is disabled by policy or unsupported by the current model no longer poisons the rest of the session. The image is stripped from conversation history after the 400 so subsequent prompts succeed.
+- Shells promoted to background from /tasks keep running after the turn ends
+- Hide internal disabled tool messages from background helper agents
+- Sandbox tool loads correctly when mxc-sdk is provided by the host environment
+- Custom agents in nested .github/agents and .claude/agents directories are now discovered when the session is started from a subdirectory of the repository root
+- Approving a tool permission prompt no longer causes a second prompt for the same tool call
+- View tool prompts now correctly state the 20KB truncation limit instead of 50KB
+- Keep workspace MCP servers from restarting in a loop
+- Keep custom agents on their configured model when using BYOK providers
+- Recover from temporary content policy errors without restarting the session
+- Autopilot continues cleanly in relay sessions and /plan shows the short prompt
+- Git commands no longer flash a console window on Windows
+- Claude-format plugin `preToolUse` and `permissionRequest` hooks now fire correctly for tool matchers like `Bash`, `Read`, and `*`, and Claude-format hook payloads carry the Claude tool name (`Bash` rather than `bash`)
+- Terminal colors update live when the active theme changes mid-session
+- Streamed assistant text no longer intermittently duplicates in the timeline
+- grep skips missing search paths and continues with valid results instead of failing
+- Remote MCP OAuth servers start only once per matching config instead of restarting for each subagent
+- Nested subagents respect concurrency limits without blocking terminal input
+- Plugin install works when the marketplace ref is a fully-qualified tag (e.g. refs/tags/v2.1.0)
+- Press W to create a worktree from the expanded issue or pull request details view
+- /every and /after can now schedule slash commands (e.g. /every 1d /chronicle standup)
+- Model picker opens to the tab containing the currently selected model
+- Shell commands run via lightweight process spawning instead of a pseudo-terminal; interactive input via write_bash is no longer supported
+- Improve color contrast in GitHub themes to meet WCAG AA accessibility standards
+- Show descriptions for ACP session config options
+- Speed up branch and HEAD detection in warm sessions
+- Light theme secondary background color is now rendered correctly
+
+## 1.0.61 - 2026-06-09
+
+- Polish /agents picker and Create New Agent wizard with consistent borders, headers, and styled inputs
+- Fixed a bug where resuming a session could leave the screen blank
+- Add /settings interactive dialog to browse and edit all user settings in one place
+- Resuming a local session with memory disabled no longer crashes the UI to a blank screen
+- /after and /every commands now appear in the /experimental slash command list
+- Auto-load MCP servers from .github/mcp.json workspace config file
+- /env output hides internal hooks and shows full file paths for hook sources
+- Prevent crashes from malformed UTF-8, oversized string buffers, and terminal disconnect errors
+- Add support for Claude Fable 5 model
+- Gemini models work correctly with MCP tools that use nullable schema types
+- Number-key selection in pickers (e.g. /agent) works for items 10 and beyond
+- GitHub issue and PR references inside existing links no longer create broken nested autolinks
+- Bash tool correctly handles multi-byte UTF-8 characters (em dash, curly quotes, etc.) in command input
+- Symlinked directories now appear in @-file picker suggestions
+- MCP OAuth re-authentication correctly uses the saved OAuth client ID for remote servers
+- Pasted images no longer leak into the main prompt after a permission dialog closes
+- Press '/' in the /agent picker to filter agents by name
+- Configure home tab bar visibility, order, and hidden tabs via the `tabs` setting in settings.json
+- grep and glob tools correctly handle single path arguments, preventing missed search results
+- Hook progress status lines marked as temporary collapse in place instead of accumulating in the conversation timeline
+- /fork shows a "Creating fork..." progress notification while the fork is being created
+- /mcp search works correctly with external registries
+- Use natural language with /every and /after to schedule tasks using cron expressions, calendar times, or relative durations
+- Light theme secondary background color is now rendered correctly
+- Search bar match count stays inside the prompt frame
+- GitHub theme adapts to light terminals with an authentic GitHub Primer light color palette
+- Add mTLS and private-CA support for OTLP telemetry export over HTTPS
+- Fixed false positives in shell command validation that could block harmless commands containing words like "kill" in string literals or embedded documents (heredocs).
+- Add full screen scrollbar
+- Grep searches in large monorepos use an indexed search engine for significantly faster results
+- `/sessions` now navigates to the Sessions tab instead of opening an overlay
+- Add http/protobuf OTLP HTTP export via standard OTel protocol env vars
+- Prompt mode surfaces model-load errors on stderr instead of exiting silently
+- Add /worktree command (aliased /move) to create a new git worktree and switch into it, moving any uncommitted changes along
+- Plugin install enforces managed marketplace policy even when settings cannot be fetched due to network errors
+- `/help` now lists `$HOME/.copilot/instructions/**/*.instructions.md` alongside the other user-level instruction locations
+- Colors render correctly in WSL and tmux sessions instead of falling back to a degraded palette
+- Exit shell mode by pressing Esc or Ctrl+C on an empty prompt, in addition to Backspace
+- Add `beepOnSchedule` setting to disable completion beeps for scheduled `/every` and `/after` runs
+
+## 1.0.60 - 2026-06-05
+
+- Tab completes `..` parent traversal in slash-command path arguments instead of switching tabs
+- Add the max reasoning effort level for Anthropic models and make all effort levels available on every plan
+- Screen no longer stays blank after waking from sleep inside a terminal multiplexer
+- Input fields render background color correctly inside highlighted frames
+- Cursor renders in the correct position in plan approval and review feedback prompts
+- Worktree directory uses a flat name when PR branch contains slashes (e.g. `cli/foo` → `.worktrees/cli-foo`)
+- Queue hint correctly shows ctrl+enter instead of ctrl+q when kitty keyboard protocol is active
+- Status line progressively stacks across rows at narrow terminal widths instead of truncating elements beyond recognition
+- Clipboard operations on X11 no longer corrupt the terminal display
+- Add `builtInAgents.rubberDuckAutoInvoke` setting to control automatic rubber duck agent invocation (disabled by default)
+- On Windows, executables are no longer discovered in the working directory when invoking by bare name (e.g. `git`). Add the working directory to `PATH` to enable discovery.
+- Interactive shell commands no longer hang when producing large amounts of output
+- MCP tools glyph in /context legend displays at the correct size
+- Skill and slash command picker rows correctly display multi-line descriptions as a single line
+- IDE picker now hides entries whose editor connection has gone away, so selecting one no longer fails with a connection error, and appends a process id to entries that share the same editor and folder so git worktrees of the same repo can be told apart
+- Model picker fits within small terminal windows and mouse scroll works in the picker
+- Show cache write tokens alongside cache read tokens in /usage display
+- Repurpose ctrl+s to stash and pop the current prompt (Claude Code parity); the slash-command picker is still available by typing /
+- /context separates Custom Instructions from the system prompt and cross-references per-server MCP tool token costs with /mcp
+- Add `billing` help topic with an overview of AI credit usage features
+- Add vim-style navigation keys (g, G, Ctrl+D, Ctrl+U) to the /diff view
+- Show the Mission Control sharing status of synced sessions in the /session info view
+- Add -r as a shorthand for --resume
+- LSP server config accepts `bash`, `powershell`, and `cwd` keys; command launch default cwd stays project-root unless `cwd` is set, and `cwd` expansion now supports plugin vars like `PLUGIN_ROOT` while shell launches keep hook-matching cwd/env behavior
+- Rewind picker shows working-tree diff stats (+added −removed) at each checkpoint
+- Create a git worktree for a pull request directly from the pull requests screen
+- Remaining requests percentage no longer shows a negative value for over-limit users
+- Extension permission prompts respect --yolo and pre-approved locations on startup
+- Custom agent instructions are no longer duplicated each turn, reducing context window usage
+- Linux sandbox no longer fails when allowedHosts or blockedHosts are configured
+- Session completion signal (terminal beep, autopilot continuation) now waits for background shell commands to finish
+- Cmd+Backspace deletes the line before the cursor on macOS prompt input
+- web_fetch blocks loopback, private, and cloud metadata addresses and no longer silently follows redirects
+- Trusted folders and other config keys are no longer dropped when experiment assignments are cached concurrently
+- Rewind no longer deletes ignored files when rolling back to a previous snapshot
+- ACP allow_all config option correctly applies unrestricted permissions for tools, paths, and URLs
+- --available-tools, --excluded-tools, and --reasoning-effort flags apply correctly in ACP mode
+- LSP workspace/configuration response returns the correct number of entries, preventing strict servers like ty from panicking
+- Extensions linked via directory symlinks are now discovered and loaded correctly
+- Typing "help" at the prompt opens the quick-help overlay instead of sending it as a chat message
+- Wide characters (e.g. CJK) render correctly in the terminal diff view without visual corruption
+- Folder trust persists across git worktrees without re-prompting
+- Force-removing a marketplace no longer causes its plugins to reinstall on next launch
+- MCP OAuth re-authentication no longer fails with an address-in-use error when a login is already in progress
+- Repository plugin overrides no longer change globally enabled plugin settings
+- MCP allowlist now matches npm scoped servers whose registry entry drops the leading @ from the package identifier
+- MCP servers registered via Azure API Center are no longer incorrectly blocked by the allowlist
+- Local MCP servers sharing a serialized token broker (e.g. M365) reliably start instead of intermittently failing
+- Prompt for approval before running commands that set dynamic-loader or git-config env vars (e.g. LD_PRELOAD, GIT_EXTERNAL_DIFF)
+- MCP tools added or removed by a server mid-turn are now available immediately in the same turn
+- BYOK file attachments larger than 5 MiB now send successfully via OpenAI Responses provider
+- The /init suggestion is no longer shown when running outside a git repository
+- Show session link in /session info table when remote exporting or steering
+- /env command now shows hook counts and source provenance for active hooks
+- Add missing keyboard shortcuts to /help content (?, ctrl+q, ctrl+r, ctrl+z, ctrl+y, shift+enter)
+- Auto-link bare #number issue and PR references to the current git repository
+- Error message for --cloud without experimental mode explains how to enable /experimental
+- /tasks detail view shows the latest prompt after sending a follow-up to a background agent
+- Enforce bypass permissions policy for --allow-all-tools, --allow-all-paths, and --allow-all-urls flags
+
+## 1.0.58 - 2026-06-02
+
+- Rubber Duck is now enabled by default
+- Remote JSON RPC is now enabled by default
+- Experimental schedule prompts with `/every` and `/after`
+- Experimental new GitHub TUI theme
+- Experimental new UI with easy access to issues, pull requests, and gists
+
+## 1.0.57 - 2026-06-01
+
+- Actionable error message shown when GitHub API rate limit is hit during `copilot update`
+- Plugin slash commands (/plugin install, uninstall, update, marketplace add/remove/browse) now show immediate feedback while the operation is in progress
+- Canceling a running shell command (Ctrl+C on a !command, or aborting an agent command — including in sandboxed and background-promoted shells) now terminates the whole process tree instead of leaving orphaned processes running
+- Canvas providers can return file:// URLs in open results for local file previews
+- Symlinked directories appear in /cwd completion suggestions
+- In Azure DevOps-only repositories, the built-in GitHub MCP server now exposes only the web_search tool instead of being fully disabled
+- Quota footer shows remaining requests as a rounded percentage
+- /lsp show, /lsp test, and /lsp reload correctly discover project LSP config when the CLI is launched from a subdirectory
+- MCP server timeout configuration is preserved after tools list changes
+- /skills add and /skills remove correctly handle paths wrapped in quotes (e.g., from Windows Explorer "Copy as path")
+- Running `copilot` with an unquoted multi-word prompt now shows a helpful "quote your prompt" hint instead of a raw commander error
+- Default networking transport is now HTTP/1.1, improving reliability on some network paths. Opt into HTTP/2 with COPILOT_ENABLE_HTTP2=1.
+- Plugins auto-installed from repository settings no longer leak into user global config
+- Grep tool correctly handles tsx and jsx as file type filters
+- COPILOT_HOME is honored for the server discovery registry directory
+- Click a diff line with the mouse to select it in diff mode
+- Ctrl+C and other modified keys work correctly inside tmux
+- @-mention file search matches files regardless of query letter casing
+- `copilot plugin marketplace list` now honors repo-level `extraKnownMarketplaces` settings from `.github/copilot/settings.json`
+- Queued prompts in the footer are capped to a single line, preventing them from pushing session messages off screen
+- MCP servers configured with npx --registry are no longer incorrectly blocked by policy
+- Session no longer hangs indefinitely after an error occurs during internal event processing
+- Installed plugins no longer include the .git directory from the plugin source repository
+- New reasoning after tool calls appears at the bottom of the timeline instead of above earlier output
+- Pasting text copied from a browser, editor, or terminal no longer leaves a stray empty line, broken box-drawing lines, or a misplaced cursor in the prompt
+- preToolUse hook errors now deny the tool call instead of silently allowing execution
+- Session resume works correctly after a crash that left partial data in the session log
+- High-contrast diff backgrounds use darker colors to improve text readability
+- Add showTipsOnStartup setting to control whether startup tips are shown
+- Surface the underlying reason (e.g. GitHub API rate limit) when SDK auth-token validation fails, instead of the misleading "Session was not created with authentication info or custom provider" message.
+- /diff defaults to branch diff when there are no unstaged changes
+
+## 1.0.56 - 2026-05-29
+
+- Free and Student users can select models other than Auto in the model picker
+- ThemePicker side-by-side layout fits within a 120-column terminal without wrapping
+- Model picker shows accurate total context window size per pricing tier
+- Add `builtInAgents.rubberDuck` setting to enable or disable the rubber duck agent via `copilot config`
+- Extended key reporting works correctly in tmux when Kitty keyboard protocol is unavailable
+- Config and settings files are written atomically to prevent data loss when multiple CLI processes run concurrently
+- BYOK provider configuration now applies correctly to ACP sessions
+- MCP tools that return both human-readable `content` text and a `structuredContent` payload now surface both to the agent instead of dropping either side. When the text is the literal JSON serialization (per MCP spec §5.2.6) it is deduplicated; otherwise the two are concatenated.
+- Fix /context small-token legend formatting and free-space grid rounding
+- Reasoning effort picker respects model capabilities — options not supported by the model are no longer shown
+- File paths in /env output display with correct formatting
+- Reasoning text always displays above the assistant response in the conversation timeline
+- Assistant responses render without single-word orphan lines in the terminal timeline
+- Diff view uses a continuous scroll layout with sticky file and hunk headers, full terminal width, and theme-aware colors
+- web_fetch tool prefers markdown content when available, using HTTP content negotiation for cleaner results from documentation sites
+- Cursor stays at correct position after pasting text that contains tab characters
+- Code review agent now uses the same model as the current session instead of a fixed default
+- When gh CLI is on PATH, GitHub MCP server now omits redundant gh-replaceable tools by default, reducing token usage
+- Context window tier selection now persists durably in session events and survives SDK-only resume paths so tier-derived limits are reapplied to request, compaction, and truncation logic without app-level repair
+- Remote session URL correctly uses the repository owner/name instead of literal 'copilot'
+- Trusted folder confirmation message clarifies that permissions may be remembered for the session
+
+## 1.0.55 - 2026-05-28
+
+- Free and Student plan users on token-based billing are restricted to Auto model selection, with an explanation shown in the model picker
+- Report Claude thinking (reasoning) tokens in session usage summaries
+- Add support for Claude Opus 4.8
+- Loading spinner no longer hangs forever when launching in an untrusted folder
+- MCP server configuration form saves the latest typed value when pressing Ctrl+S
+- Show per-MCP-server token usage in /mcp and break out MCP tool tokens in /context
+- Custom agents and skills are now discovered recursively in subdirectories
+- Add `permissions.disableBypassPermissionsMode` setting to prevent enabling allow-all/yolo mode
+- Update model selection behavior for select subscription plans
+- The exit_plan_mode tool is only offered to the model while the session is in plan mode
+- Native binary crash (e.g. SIGSEGV) now falls through to the JavaScript fallback instead of silently exiting
+- Add /autopilot <objective> to keep autopilot focused, with /goal as an alias
+- Detect PowerShell 7 correctly when pwsh.exe is installed as a Microsoft Store App Execution Alias
+- Sessions with zero-sized CAPI billing batches resume correctly
+- Cell-based terminal renderer is now enabled for all users by default
+- Show a warning when remote controlled sessions are disabled by organization policy
+- Extension log files are now captured per extension and surfaced in the extensions_manage tool to help diagnose failures
+- Project extensions in .github/extensions are now discovered in non-git (folder-backed) workspaces
+- Allow /statusline and /theme commands to run while the agent is executing
+- MCP configuration now opens in its own dedicated screen, with scrollable server and tool lists when content exceeds the visible area
+- Hook progress streaming shows real-time status messages from long-running hooks in the timeline
+- pluginDirectories on session.create and session.resume RPC: SDK clients can mount Open Plugins-format directories per session.
+- Delete remote sessions directly from the session picker
+- Schedule manager hint bar text no longer wraps over dialog borders when entries are added
+- `copilot update` and `copilot version` authenticate release API requests to avoid rate limit errors in shared-NAT environments
+- Diff view keyboard shortcut hints display correctly when toggling between unstaged and branch diff modes
+- Clipboard paste works correctly on Wayland compositors that do not support wlr-data-control (e.g. GNOME/Mutter)
+- Interactive shell tool preserves parent terminal color settings so diff tools and other programs render with full color
+- Canvas tools with optional object input schemas open correctly without validation errors
+- Extension subprocesses no longer fail with "Invalid command format" when forked from an older CLI version
+- Settings migration preserves user data when legacy snake_case keys exist from older CLI versions
+- Support owner/repo#ref syntax when adding plugins from the marketplace
+- Feedback dialog and /skills help text use Copilot-consistent log paths and terminology
+- Progress indicators integrate natively with tmux 3.6b pane progress state
+- --plugin-dir skills now take precedence over personal-home (~/.copilot, ~/.agents) skills with the same name. Order is now project > plugin-dir > personal > custom.
+- Show a helpful message when remote controlled sessions are disabled by organization policy
+- Reasoning token count now shown in session token summary for all users
+- Terminal bell no longer sounds on turn completion unless explicitly enabled via config
+- /resume picker no longer shows blank rows for sessions closed before sending a message
+- Aborting a session no longer leaves the UI stuck in a Cancelling state when Task tool agents are running
+- vote_memory tool calls are throttled per response and per interaction to prevent runaway voting bursts
+- Upward auto-scroll now engages when dragging mouse selection past the top of the timeline
+- Clipboard correctly copies CJK and supplementary-plane Unicode characters on Windows
+- Increase selection background contrast across all color themes for better visibility
+- /env now shows loaded extensions with their status and source
+- Extensions launch correctly when the CLI runs as a single-executable application (SEA)
+
+## 1.0.54 - 2026-05-24
+
+Fixes and changes
+
+## 1.0.53 - 2026-05-24
+
+- Multiline prompts display fully without content clipping or selection offset
+- /skills picker now correctly honors --config-dir when saving skill preferences
+- Bash shell sessions no longer hang when PS0 or PROMPT_COMMAND is set in the environment
+
+## 1.0.52 - 2026-05-23
+
+- Non-interactive subcommands (plugin list, mcp list, help, version) no longer consume stdin
+- Add vertical scrollbar with mouse drag support to the main conversation view
+- Switching to Autopilot mode no longer triggers unexpected permission prompts for tool, path, or URL access
+- copilot --continue from a session's saved directory now refreshes the saved branch and git context instead of leaving them stale
+- Kill command safety filter no longer rejects valid commands that contain shell redirection like `kill -0 <PID> 2>/dev/null`.
+- Sessions now resume in their saved working directory; pass -C <dir> to override. Flags whose values are relative paths (e.g. --attachment, --log-dir) resolve from the saved cwd.
+- Context window tier selection (default ~200K vs 1M tokens) is now enforced end-to-end, so picking a tier actually constrains compaction, truncation, and token display
+- AI Credits usage correctly displays after sessions using the Responses API
+- Rendering no longer stutters when using tmux on Cygwin or mintty
+- Slash command picker keeps (experimental) and (staff) labels orange when the row is selected
+- Reasoning tokens display as a parenthetical on output token count in the token usage summary
+- Sessions containing events with non-URL strings in URL/URI fields resume without a 'Session file is corrupted' error
+- Requests that time out due to an HTTP/2 upload stall automatically retry over HTTP/1.1
+- Sessions no longer fail to load on Windows when a process exits with a high-bit exit code (e.g., .NET unhandled exceptions)
+- Timeline entry connector color matches surrounding elements when expanded
+- Gray background bar no longer appears behind user messages on terminals without truecolor support
+- Status line command supports plain shell commands in addition to executable script paths
+- Automatically prune old process log files from ~/.copilot/logs/ at startup to prevent unbounded disk growth
+- Polish /statusline picker with cleaner item descriptions and better spacing
+- Picker checkboxes now use a single-cell ▣/▢ glyph for tighter, more consistent rows across pickers
+- Custom agents support opt-in deferred tool loading via `deferred-tool-loading` in agent frontmatter, enabling tool-search discovery for agents with large tool lists
+- Exit summary displays `AI Credits` label with correct spacing before the value
+- /restart and /update preserve the current session ID after restarting
+- Legacy nested `oauth.clientId` and `oauth.callbackPort` keys in MCP server configs are now migrated to the supported `oauthClientId` and `auth.redirectPort` keys instead of being silently dropped
+- MCP OAuth re-authentication honors the configured redirectPort
+- PowerShell division operator no longer triggers false 'Allow directory access' prompts on Windows
+- /compact accepts optional focus instructions to shape the compaction summary
+- General-purpose subagents use GPT-5.4 or GPT-5.5 when available
+- /usage shows quota progress bars for session and weekly limits
+- AI credits error messages updated with clearer language and a Manage budget link
+
+## 1.0.51 - 2026-05-20
+
+- `--session-id=<id>` resumes known sessions or tasks, and starts new sessions with a specific UUID
+- /remote commands now respect organization remote control and view from cloud policy and show a clear error when disabled
+- /remote command can now be used while the agent is working
+- Customizable status line in the terminal footer displays session info such as model, context window, git branch, and more
+- MCP tool loading at startup is faster for users with many HTTP-based MCP servers
+- Settings file no longer accumulates unrelated config keys when settings are updated
+- Add /security-review slash command to review code changes for security vulnerabilities
+- Add preMcpToolCall hook for hook providers to control outgoing MCP request metadata
+- Add /chronicle cost-tips subcommand for personalized token usage and cost reduction recommendations
+- MCP servers using OAuth stay connected when authentication was performed in a separate session
+- GFM tables and blockquotes inside list items render correctly without a floating top border
+- Experimental mode indicator now appears persistently in the app header instead of as a one-time notification
+- Loading indicator color matches the active mode (plan, autopilot, shell)
+- Session naming works correctly for usage-based billing users
+- Pressing Enter on a highlighted subcommand completion inserts the selection instead of submitting the partial command
+- Use default release notes when publishing a release with no changelog entries
+- Editor launched with Ctrl+G no longer steals keystrokes or requires double keypresses
+- `/memory show` displays documentation links for learning about and managing Copilot Memory
+- Add `terminalProgress` setting to enable or disable OSC 9;4 terminal progress indicators
+- postToolUse hooks can now inject additionalContext into successful tool results
+- Only show remote session startup failure when remote mode is explicitly requested via --remote or enabled in user configuration
+- Shell tool calls succeed even when the model omits the `description` parameter
+- Ensure input token usage includes cached, update token formatting to clarify
+- Login prompt more clearly warns when token storage falls back to insecure plain text config file
+- GitHub MCP web search tool is available immediately without requiring tool search
+- Secret scanning now covers commit messages and PR descriptions, redacting secrets before they are published
+- Input area grows responsively with terminal height instead of capping at 3 lines
+
+## 1.0.49 - 2026-05-18
+
+- postToolUse hook additionalContext is now injected as a system message for the model instead of being silently discarded
+- Mouse clicks in the prompt correctly position cursor when input contains wide characters (CJK, emoji)
+- Add /chronicle search subcommand to search all session content by keyword or topic
+- /user switch reuses the fetched user list and shows a loading spinner on first open
+- MCP servers using static OAuth clients correctly persist registration for token refreshes
+- Add support for running the CLI on Alpine Linux (musl libc)
+- Add /exit print option to print the session to the terminal before exiting
+- Add /rubber-duck command to get an independent critique of the agent's current work
+- Add /session id subcommand to display the current session ID and copy it to the clipboard
+- Add `auth.redirectPort` config option for MCP servers to pin the OAuth callback to a fixed port
+- Add /memory on|off|show slash command to enable, disable, or view memory status (persistent)
+- Add `copilot plugin update --all` to update all installed plugins at once
+- Add `/rubber-duck` command to invoke the rubber duck agent for an independent critique (experimental)
+- Input prompt collapses to a single line when empty and grows naturally as you type
+- File diffs are correctly reported to ACP clients for all edit tool types
+- Repo hooks in `.github/hooks/` now load in prompt mode (`-p`) when the folder is already trusted
+- Fix extra line in timeline entries
+- Box drawing and block characters render correctly on Windows terminals not using UTF-8 code page
+- MCP server configurations with no `args` field are now accepted and treated as an empty args list
+- Document attachment paths are included in context so the agent can reference pasted file paths, including Windows Copy as path inputs
+- MCP stdio servers now display type as 'stdio' instead of 'local' for consistency
+- Progress bar indicator now displays correctly in tmux sessions
+- Experimental slash commands are now annotated with "(experimental)" in the help dialog and command picker
+- Auto-update downloads the smaller platform-specific package instead of the universal one when available
+- Auto-link GitHub issue and PR references (owner/repo#number) in assistant responses
+- Prompt mode (-p) automatically loads workspace MCP sources when the current folder is already trusted
+- Experimental: /mcp search command to search and install MCP servers from registry
+- Experimental: Tool search with deferred loading for MCP and external tools
+- Add "None" reasoning effort option to disable model reasoning in the reasoning effort picker
+- Add COPILOT_PLUGIN_DIR_ONLY environment variable to disable automatic plugin discovery, enabling deterministic plugin sets when using --plugin-dir
+- Copying text from the scroll view joins soft-wrapped lines without extra newlines or indentation
+- Cursor positioning in input fields works correctly with wide characters (CJK, emoji)
+- Hooks (preToolUse, postToolUse, subagentStart, subagentStop) now fire correctly for sub-agent tool calls
+- Plugins loaded via --plugin-dir now correctly register their agents as available task(agent_type=...) subagents in prompt mode
+- Memory storage correctly limits available scopes when no repository context is present
+- --plugin-dir and --additional-mcp-config now work in --server / --headless mode
+- Content-filtered model responses now display an explanation instead of a blank assistant turn
+- PromptFrame UI now renders inside tmux when the outer terminal is ghostty, WezTerm, or kitty (detected via `tmux list-clients`).
+- MCP OAuth token lookups are correctly scoped to the active session
+- Memory permission prompts now name who can see a stored memory: user scope or the specific `owner/repo` for repository scope. Timeline entries also show the scope (`(for user)` / `(shared with repository collaborators)`).
+- Reduce PowerShell syntax errors on Windows by avoiding && chaining instructions when using legacy PowerShell 5.x
+
+## 1.0.48 - 2026-05-14
+
+- Model picker displays actual token prices instead of dot indicators for token-based billing users
+- Instruction files with unquoted glob patterns in applyTo frontmatter (e.g. applyTo: \*_/_.ts) are now applied correctly
+- Input text with CJK characters or emoji renders without blank gaps between lines
+- /context shows correct token limits for all models instead of always showing 128k
+- Auto-disable the built-in github-mcp-server in Azure DevOps-only workspaces when running in prompt/headless mode, matching interactive mode behavior
+- Terminal cursor positions correctly on the input field instead of on decorative elements like the selected tab
+- ACP clients receive updated config options when the active model is changed
+- /ask dialog no longer prompts for follow-up replies it cannot receive
+- Skill content injected to the model no longer includes YAML frontmatter metadata
+
+## 1.0.47 - 2026-05-13
+
+- /fork accepts an optional name and forked sessions display their origin in the sessions dialog
+- Copilot Max subscribers see the correct models available to their subscription tier
+- Support j/k keys for up/down navigation in the /diff view
+- --resume supports Copilot cloud agent sessions where the agent hasn't pushed any changes to its branch
+
+## 1.0.46 - 2026-05-12
+
+- Display a warning when the CLI version is deprecated and premium model access may be lost
+- PowerShell starts correctly when pwsh is installed as a .NET global tool shim
+- Long lines in diff view wrap at terminal width instead of being truncated
+- Read-only gh CLI commands (list, view, status, diff, etc.) are auto-approved without prompting for user confirmation
+- Sessions no longer crash mid-turn with ERR_HTTP2_INVALID_SESSION errors
+
+## 1.0.45 - 2026-05-11
+
+- Add /autopilot slash command to toggle between interactive and autopilot modes
+- Fall back to Windows PowerShell (powershell.exe) when PowerShell 7+ (pwsh) is not available on Windows
+- OpenTelemetry output aligns with GenAI semantic conventions: MCP tool calls now use standard tool_call spans, and a new gen_ai.client.operation.duration metric tracks tool execution time
+- Sessions with extension permission prompts can be resumed without a "Session file is corrupted" error
+- agentStop hook now fires correctly when the agent stops via task_complete
+- CLI starts faster on terminals with limited OSC color query support, shaving up to ~1.5s off startup time.
+- Add /fork command to fork the current session into a new independent session
+
+## 1.0.44 - 2026-05-08
+
+- Path completion in /add-dir no longer flickers or gets intercepted by @ and # pickers
+- Slash commands can now appear mid-input, and multiple skills can be invoked in a single message
+- userPromptSubmitted hooks can now handle requests directly, bypassing the LLM and returning a response without making a model call
+- Faster /user list and /user switch for multi-account users
+- Add optional `prerelease` argument to `copilot update` and `/update` to fetch the latest prerelease build
+- Shell commands via ! prefix work correctly with all shell configurations
+- Shell aliases and rc file settings now work in ! commands
+- Quota display correctly shows remaining usage for Free users instead of always showing 100% used
+- Tool permissions granted in autopilot mode are preserved after /clear
+- Effort level applies correctly when switching models via the /model picker
+- Pressing Ctrl+C while a permission prompt is pending no longer causes the CLI to hang
+- Project info remains visible in slash command picker when no results match
+- Invalid URL entries in settings.json no longer crash CLI startup and are skipped with a warning
+- Timeline shows the resolved model for rubber-duck sub-agents (e.g. Rubber-duck(claude-opus-4.7))
+
+## 1.0.43 - 2026-05-06
+
+- Add username toggle to /statusline picker to display the active account in the footer
+- Auto mode uses server-side model routing for improved real-time model selection
+- Resume prompt shows correct session name when multiple sessions are active
+- Protect against RCE from malicious bare repositories nested inside a project
+- MCP server child processes (e.g. started via npx or uvx) are now fully terminated when a session ends
+- Show download progress when running the update command
+
+## 1.0.42 - 2026-05-06
+
+- MCP server failure warning now suggests a directly runnable `/mcp show` command when the server name contains whitespace
+- MCP server failure warnings include stderr output to help diagnose connection errors
+- Add -C <directory> flag to change working directory before starting, similar to git -C
+- Exit message resume command shows session ID instead of auto-generated name when session has not been renamed
+- Remote session export now supports non-GitHub repositories and repo-less directories
+- Resuming a session no longer shows a false "session in use" warning after choosing "Go back"
+- Enter key no longer gets permanently stuck after cancelling a request
+- Suppress the exit summary when the session has no user messages and no saved session to resume
+- CLI updates on Windows no longer fail with ENOENT when a transient EPERM occurs during package extraction
+- Add rubber-duck agent for GPT sessions, powered by Claude (available in /experimental)
+
+## 1.0.41 - 2026-05-05
+
+- CLI starts faster by rendering the UI immediately while authentication resolves in the background
+- Shell completions (bash, zsh, fish) are automatically installed on first run and updated after `copilot update`
+- Tab-completing slash commands that accept arguments now adds a trailing space automatically
+- Package extraction no longer crashes on Windows when antivirus or filesystem locks cause transient EPERM errors
+- Remote session connection errors show your logged-in account and tailored remediation steps
+- Markdown formatting renders in ask user prompt questions
+- Add experimental MCP Tasks support: MCP tools with `taskSupport: "required"` run as non-blocking background agents trackable via `list_agents` and `read_agent` (available when experimental mode is enabled, e.g. via `/experimental on` or the `--experimental` flag)
+- Extensions now load in prompt mode (-p). User extensions load by default; project extensions alnd management tools require GITHUB_COPILOT_PROMPT_MODE_EXTENSIONS=true.
+- Assistant responses no longer contain spurious system notification XML tags
+- Large output guidance correctly references the configured grep tool name
+- Adding a plugin marketplace using a git SSH URL (e.g. git@github.com:owner/repo) now works correctly
+- Slash command picker searches command descriptions and underlines matched characters
+- Memory tool confirmation prompt now shows the scope (repository or user) when requesting permission to store a memory
+- SQL todo timeline entries display more accurately for INSERT OR IGNORE/REPLACE and blocked status updates
+- Streaming text and shimmer animations stay smooth on slow or busy hosts
+- Add --attachment flag in non-interactive (-p/--prompt) mode to attach files (images or native documents) to the initial prompt
+- @-mention completion works for ./ paths, no longer adds trailing space on directories, and shows project files before workspace roots
+- Improve stability on Windows by working around a V8 crash in Node 24.x
+- Session files containing Unicode line separator characters load correctly
+- Reasoning effort picker hint text displays "Esc to cancel" with correct spacing
+- Improve reliability of file edits by better recovering from fuzzy or misaligned edit blocks
+
+## 1.0.40 - 2026-05-01
+
+- PR branch decoration displays correctly in the footer regardless of model name length
+- /clear and /new reset the active custom agent selection
+- Assistant responses stream with smoother text output
+- `copilot plugin list` shows the correct version after running `copilot plugin update`
+- Add support for `client_credentials` OAuth grant type for MCP servers, enabling fully headless authentication without a browser
+- Subagents correctly evaluate tool search support for their own model instead of inheriting the parent session's settings
+- Switching sessions with /new or /resume no longer carries over pending messages to the new session
+- CLI no longer hangs at 100% CPU when sending a large file attachment
+- Resume session picker no longer shows duplicate entries for the same Mission Control-backed session
+- Session resume selector displays summaries on a single line, truncated to fit the column width
+- Print "Exiting…" to stderr immediately on Ctrl+C during prompt mode so shutdown progress is visible
+- /research uses an orchestrator/subagent model for more thorough and reliable deep research results
+- Autopilot mode now limits continuation messages to 5 by default (configurable with --max-autopilot-continues)
+- Automatically clean up old CLI package versions from disk during auto-update
+- Remote session statusline shows the remote working directory and branch instead of local context
+- /update no longer re-submits the original -i prompt after restarting
+- Detect Azure DevOps repositories and auto-disable the GitHub MCP server
+- Session history, file tracking, and the /chronicle command are now available to all users
+- Skills are available as slash commands in ACP clients, matching the CLI experience
+- Resuming a session no longer falsely reports it as in use after a previous CLI process exited unexpectedly
+- --config-dir now propagates correctly to plugin subcommands; --config-dir is deprecated in favor of COPILOT_HOME
+- Mouse selection works while the /ask response dialog is open, so its content can be highlighted and copied
+- Improve CLI startup speed by loading custom CA certificates asynchronously
+- Remote control link shows the full URL in the timeline instead of 'Open in browser'
+- ACP clients (e.g. Zed) now display the agent's live plan as it works through multi-step tasks
+- Add toggle for custom statusLine.command visibility in the statusline picker
+- ACP clients can now list and switch custom agents via the agent config option
+- MCP OAuth tokens cache correctly when multiple servers share the same URL but use different static OAuth client IDs
+- MCP tool names with dots or other invalid characters are now sanitized correctly
+- Ctrl+C and double-Esc remove pending queued messages one at a time instead of all at once
+- Slash command suggestions rank prefix matches above fuzzy matches
+- Prompt mode (-p) now gates repo hooks and workspace MCP behind opt-in env vars (GITHUB_COPILOT_PROMPT_MODE_REPO_HOOKS and GITHUB_COPILOT_PROMPT_MODE_WORKSPACE_MCP) for secure-by-default behavior
+
+## 1.0.39 - 2026-04-28
+
+- Allow ACP clients to toggle allow-all permission mode via session configuration
+- Add /compact, /context, /usage, and /env slash commands for ACP sessions
+- Press ctrl+x → b to move the current running task or shell command to the background
+- Transient pipe errors on child process stdio streams no longer cause crashes or trigger false crash reports
+- `/remote` status output now shows actionable hints for each connection state
+- Improve --resume session picker with better tab layout, status display, and progressive loading
+- Slash command argument picker opens immediately at exact command boundaries without requiring a trailing space
+
+## 1.0.37 - 2026-04-27
+
+- Location-based permission persistence is now enabled by default, so approvals carry over across sessions for the same directory
+- Add `copilot completion <bash|zsh|fish>` subcommand to generate static shell completion scripts for subcommands, flags, and known choice values
+- Press `s` in the session picker to cycle sort order: relevance, last used, created, or name
+- ACP model config options now include description and metadata for clients using the configOptions API
+- Model and effort change notification no longer appears when re-selecting the same model or effort level
+- Clipboard write no longer leaks X11 handles on Linux
+- Pending message indicator displays correctly alongside prompt frames
+- Fix detached HEAD detection always returning false after switch to git branch --show-current
+- Skill picker list stays fully visible when skills have errors or warnings
+- /ask responses now render markdown, including tables and formatted links
+
+## 1.0.36 - 2026-04-24
+
+- Subcommand picker shows a selection indicator (❯) next to the highlighted item
+- Clearer error message with a direct link when multiple Copilot licenses are detected
+- Fixed an issue where preToolUse.matcher was ignored. After upgrade, hooks with matcher run only for tool names that fully match the regex.
+- `/keep-alive` is available without experimental mode to prevent system sleep while Copilot CLI is active
+- /remote command shows current status and supports /remote on and /remote off to toggle remote control
+- Disabled skills no longer appear in the slash command list
+- Add a 'changes' statusline toggle to show added/removed line counts for the session
+- Custom instruction files in .gitignored directories (e.g., .github/instructions/) now load correctly
+- Require double Esc to cancel in-flight work, preventing accidental interruptions
+- Saving debug logs or feedback bundles no longer overwrites existing archive files
+- Custom agents, skills, and commands from ~/.claude/ are no longer loaded by the Copilot CLI
+- Claude Opus 4.6 now uses medium reasoning effort by default
+
+## 1.0.35 - 2026-04-23
+
+- Slash commands support tab-completion for arguments and subcommands
+- Shell escape commands (!) now use your $SHELL when set, instead of always invoking /bin/sh
+- Permission prompts appear correctly in remote sessions for the CLI TUI
+- Session selector shows branch names, idle/in-use status, and has improved search with cursor support
+- Model change notification shows both the previous and new model name
+- /update and /version commands now honor your configured update channel
+- Session sync prompt uses clearer labels and explains GitHub.com cross-device sync
+- Support COPILOT_GH_HOST environment variable for GitHub hostname, taking precedence over GH_HOST
+- Press Ctrl+Y (in addition to Tab) to accept the highlighted option in completion popups (@-mentions, path completions, slash commands)
+- Add /session delete, delete <id>, and delete-all subcommands, and x-to-delete in the session picker
+- MCP server names with spaces and special characters are now supported
+- Skill slash commands (e.g. /skill-name) passed as the initial prompt via -i are recognized correctly on startup
+- Shell completion notifications are not duplicated when read_bash already returned the result
+- --continue prefers resuming sessions from the current working directory instead of the most recently touched session
+- Status line script now includes context window fields that match the model badge and /context output
+- User settings are now stored in ~/.copilot/settings.json, separate from internal state in config.json
+- Name sessions with --name and resume them by name with --resume=<name>
+- Configure Copilot agent now has shell access on Windows
+- Show a helpful error message with install instructions when clipboard utilities (wl-clipboard or xclip) are missing on Linux
+- LSP server entries in lsp.json support configurable spawn, initialization, and warmup timeouts
+- Context window indicator in the statusline is now hidden by default
+- Move MCP OAuth into the shared runtime flow and clear associated OAuth state when removing an MCP server.
+- Added a GitHub-style contribution graph to /usage that adapts to terminal color mode and falls back to distinct glyphs in no-color terminals
+- Self-correcting custom tool calls in agentic loop
+- Cursor movement, deletion, and rendering work correctly for emoji and multi-codepoint characters in the text input
+- Tool availability detection works correctly on Windows
+- Session token expiry during a turn is handled automatically without requiring you to resend your message
+- Initial tab and arrow key navigation in /cwd and /add-dir path picker selects the correct item
+- Transient I/O errors no longer appear as red error entries in the timeline when an IDE or extension disconnects
+- Custom agents and skills in ~/.claude/ are no longer incorrectly loaded as Copilot project config
+- Login command restores interactive input correctly after authentication
+- Improve rendering performance when displaying large amounts of text in the timeline
+- Sync task calls block until completion under MULTI_TURN_AGENTS instead of auto-promoting to background after 60s; sync no longer returns a reusable agent_id, use mode: "background" for follow-ups
+- Tab navigation supports Home/End keys to jump to first and last tab
+- Plugins take effect immediately after install without requiring a restart
+- Add continueOnAutoMode config option to automatically switch to auto model on rate limit instead of pausing
+- Auto mode no longer fails with an error when switching to a model that doesn't support the configured reasoning effort
+- Pattern-specific instruction files (.github/instructions/\*.instructions.md) no longer include their full body in the system prompt on every session
+- Extension shutdown errors no longer appear as error-level log noise on every session exit
+- LSP refactoring tools now register correctly on the first turn when LSP configs are present
+- Add HTTP hook support, allowing hooks to POST JSON payloads to a configured URL instead of running a local command
+- Hide subagent thinking from the timeline
+- Custom agent name is now visible in the statusline footer and can be toggled via /statusline
+- Pressing Escape on startup dialogs no longer causes race conditions
+- grep and glob tools now accept multiple search paths
+
+## 1.0.34 - 2026-04-20
+
+- Rate limit error message now says "session rate limit" instead of "global rate limit"
+
+## 1.0.33 - 2026-04-20
+
+- Resuming a remote session with --resume or --continue automatically inherits the --remote flag without needing to re-specify it
+- Add /bug, /continue, /release-notes, /export, and /reset as command aliases
+- Slash command picker suggests similar commands when you type an unrecognized or misspelled slash command
+- Add /upgrade as an alias for the /update command
+- Grep no longer times out on large repositories when content exclusion policies are enabled
+- Non-interactive mode waits for all background agents to finish before exiting
+- Skill picker correctly truncates CJK/Japanese descriptions and long skill names without wrapping
+- Slash command picker selects the highlighted command when pressing Enter
+- ctrl+t to toggle reasoning display is now listed in the /help and ? overlay
+- Sub-agents in auto mode now inherit the session model
+- Show usage limit warnings at 50% and 95% capacity, giving earlier notice before hitting rate limits
+- Use j/k for vim-style navigation and x to kill tasks in the tasks dialog
+
+## 1.0.32 - 2026-04-17
+
+- Allow short session ID prefixes (7+ hex chars) with --resume and /resume instead of the full ID
+- /feedback saves the bundle to TEMP when the working directory is not writable
+- Select `auto` as your model to let Copilot automatically pick the best available model for each session
+- Add --print-debug-info flag to display version, terminal capabilities, and environment variables
+- Show warnings when approaching 75% and 90% of your weekly usage limit
+- Attach supported document files to prompts for the agent to read and reason about
+- Add --connect flag to directly connect to a remote session by ID
+- copilot login --host now correctly authenticates with GitHub Enterprise Cloud (GHE) instances
+- Current date and time in agent context now includes local timezone offset
+- Terminal progress indicator stays visible while the agent is thinking
+- Status line no longer shows stray Unicode glyphs in terminals like Neovim after /clear
+- Rewind works correctly after using /cd to change directories
+- Multiline input is preserved when using /plan and plan mode
+- Backspace correctly exits shell mode only when the input is empty
+- Mouse wheel scrolling works correctly in the /ask dialog
+- Rate-limited sessions now pause queued messages and automatically retry instead of dropping them
+- Tables render with correct column widths, emoji support, and stable borders during terminal resize
+- Rate limit error messages now show specific context based on the type of limit reached
+- Session idle timeout is now configurable via --session-idle-timeout; disabled by default
+- Skills that exceed the token limit are still discoverable and invocable by name
+
+## 1.0.31 - 2026-04-16
+
+- Prompt frame no longer causes rendering issues on Windows and Ubuntu terminals
+
+## 1.0.30 - 2026-04-16
+
+- Feedback form links to the correct GitHub repository
+- /undo shows an explanatory message when rewind is unavailable (e.g., not in a git repository or no commits yet)
+- Plugin skills and commands are correctly discovered when using skills.discover
+- Add /statusline command (with /footer alias) to customize which items appear in the status bar (directory, branch, effort, context window, quota)
+- Remove --list-env flag that logged loaded plugins, agents, skills, and MCP servers in prompt mode
+- Image paste from clipboard works again after regression in bracketed paste handling
+- Both Ctrl+V and Meta+V trigger image paste on all platforms
+
+## 1.0.29 - 2026-04-16
+
+- Remote MCP server config now allows omitting the type field, defaulting to http
+- Blinking cursor maintains stable width so text does not shift during blink
+- Add --list-env flag to log loaded plugins, agents, skills, and MCP servers when running in prompt mode, helping verify environment configuration in CI pipelines
+- Add support for Claude Opus 4.7
+- Shell commands and MCP servers now receive COPILOT_AGENT_SESSION_ID as an environment variable
+- Agent correctly identifies repository owner from git remote URL rather than local username
+- Terminal state correctly restored after a crash exit on Windows
+
+## 1.0.28 - 2026-04-16
+
+- Permission prompts show correct repository path when working inside git submodules
+- Background agent completion notifications are not sent redundantly when read_agent is already waiting for the result
+- MCP migration hint now links to documentation with platform-specific instructions instead of embedding shell commands inline
+- Azure resource IDs no longer trigger false path security warnings when running az CLI commands
+- Rewind picker navigation simplified to arrow keys and Enter, removing the confusing 1-9 quick-select shortcut
+- A clear error message is displayed when the configured editor cannot be launched
+- Mascot plays a short blink sequence on startup instead of blinking continuously
+- Connect to CLI remote control sessions from the —resume picker
+- Support COPILOT_DISABLE_TERMINAL_TITLE environment variable to opt out of terminal title updates
+
+## 1.0.27 - 2026-04-15
+
+- Show a clear message when Copilot Pro trial is paused instead of a generic policy error
+- Status bar shows @files and #issues hints while typing, and /help hint when the slash command picker is open
+- Clipboard copy on WSL no longer leaks an invisible BOM character into pasted text
+- Add /ask command to ask a quick question without affecting conversation history
+- Add `copilot plugin marketplace update` command to refresh plugin catalogs
+
+## 1.0.26 - 2026-04-14
+
+- Escape key reliably dismisses ask_user and elicitation prompts without getting stuck
+- Spurious directory access prompts no longer appear for arguments inside find -exec blocks
+- Agent sessions no longer fail with unrecoverable errors when context compaction splits a tool call across a checkpoint boundary
+- Single-segment slash-prefixed tokens (e.g. /help, /start) no longer treated as file paths in bash commands
+- Anthropic BYOM correctly includes image data when viewing image files
+- Permission prompt notification hook only fires when a prompt is actually shown to the user
+- ctrl+o now expands all timeline entries, same as ctrl+e
+- Remote tab correctly shows Copilot coding agent tasks and supports steering without requiring a pull request
+- Rename "steering" to "remote control" in --remote flag and /remote command help text
+- Avoid sending duplicate custom instruction files (e.g. copilot-instructions.md and CLAUDE.md with identical content) to reduce wasted tokens per turn
+- Plugin hooks receive PLUGIN_ROOT, COPILOT_PLUGIN_ROOT, and CLAUDE_PLUGIN_ROOT env vars with the plugin's installation directory
+- ACP server binds to localhost only, preventing unintended network exposure
+- Installing a plugin named 'git' from a marketplace no longer fails due to incorrect URL parsing
+- Enterprise login accepts hostnames without a URL scheme (e.g. 'github.example.com')
+- LSP language servers correctly initialize on Windows using proper file URI paths
+- Relative paths in file edit operations resolve against the session working directory
+- Session scope selector in sync prompt is now more prominent and keyboard-navigable with left/right arrow keys
+- Instruction files with specific applyTo patterns are consolidated into a table instead of inlining full content, reducing context window usage
+
+## 1.0.25 - 2026-04-13
+
+- Install MCP servers from the registry with guided configuration directly in the CLI
+- Esc key works correctly after a failed /resume session lookup
+- Persist resolved model in session history and defer model changes during active turns
+- ACP clients can now provide MCP servers (stdio, HTTP, SSE) when starting or loading sessions
+- The --config-dir flag is now respected when selecting the active model
+- Add /env command to show loaded environment details (instructions, MCP servers, skills, agents, plugins)
+- /share appends the correct file extension (.md or .html) when a custom output path is given without one
+- /add-dir accepts relative paths (e.g. ./src, ../sibling) and resolves them to absolute paths
+- Custom instruction files preserve special characters like & and <placeholders>
+- Skill picker list scrolls correctly when the list exceeds the terminal height
+- MCP client reports the correct CLI version during server handshake
+- /logout shows a warning when signed in via gh CLI, PAT, API key, or environment variable, since /logout only manages OAuth sessions
+- Alt+D now deletes the word in front of the cursor in text input
+- /share html shows a file:// URL and supports Ctrl+X O to open the file directly
+- Skill instructions persist correctly across conversation turns
+- You can now remote control your CLI sessions using --remote or /remote
+- MCP remote server connections automatically retry on transient network failures
+- Share Research TOC sidebar anchor links navigate correctly within the page
+
+## 1.0.24 - 2026-04-10
+
+- preToolUse hooks now respect modifiedArgs/updatedInput, and additionalContext fields
+- Custom agent model field now accepts display names and vendor suffixes from VS Code (e.g., "Claude Sonnet 4.5", "GPT-5.4 (copilot)")
+- Terminal state (alt screen, cursor, raw mode) is restored correctly after CLI crashes like OOM or segfaults
+- The --remote flag is respected when the session sync prompt appears on first run in a GitHub repo
+- Redesign exit screen with Copilot mascot and cleaner usage summary layout
+
+## 1.0.23 - 2026-04-10
+
+- Add --mode, --autopilot, and --plan flags to start the CLI directly in a specific agent mode
+- Agent no longer hangs on the first turn when the memory backend is unavailable
+- Bazel/Buck build target labels (e.g. //package:target) no longer misidentified as file paths
+- Ctrl+L clears the terminal screen without clearing the conversation session
+- Slash command picker shows full skill descriptions and a refined scrollbar
+- /diff, /agent, /feedback, /ide, and /tuikit work while the agent is running
+- Display reasoning token usage in the per-model token breakdown when nonzero
+- Remote tab correctly shows Copilot coding agent tasks and supports steering via the Tasks API
+- Shell output with BEL characters no longer causes repeated terminal beeping
+- Migration notice for .vscode/mcp.json now includes a jq command to migrate your config to .mcp.json
+
+## 1.0.22 - 2026-04-09
+
+- MCP tools with non-standard JSON schemas are now sanitized for compatibility with all model providers
+- Better handling of large images from MCP and extension tools
+- Improved rendering performance with a new simplified inline renderer
+- Show a clear message to contact your organization administrator when remote sessions are blocked by policy
+- Sub-agent activity no longer shows duplicated tool names (e.g. "view view the file...")
+- Permission checks and other hooks now work correctly when using Anthropic models via BYOM/BYOK configuration
+- Slash command picker appears above the text input for a more stable layout
+- Custom agents can now declare a `skills` field to eagerly load skill content into agent context at startup
+- Plugins can now display a post-install message with setup instructions after installation
+- Remove .vscode/mcp.json and .devcontainer/devcontainer.json as MCP server config sources; CLI now only reads .mcp.json. A migration hint appears when .vscode/mcp.json is detected without .mcp.json.
+- Plugins remain enabled across sessions and auto-install on startup based on user config
+- Add sub-agent depth and concurrency limits to prevent runaway agent spawning
+- Warn when resuming a session that is already in use by another CLI or application
+- CLI no longer crashes on systems affected by a V8 engine bug in grapheme segmentation
+- sessionStart and sessionEnd hooks fire once per session in interactive mode instead of once per prompt
+- Plugin agents respect the model specified in their frontmatter
+
+## 1.0.21 - 2026-04-07
+
+- Add `copilot mcp` command for managing MCP servers
+- Spinner no longer appears stuck when a long-running async shell command is active
+- Enterprise GitHub URL input in the login flow now accepts keyboard input and submits on Enter
+- Slash command picker no longer flickers or shifts the input while filtering
+- Timeline no longer goes blank when content shrinks (e.g., after cancelling or tool completion)
+- Plan mode timeline display shows user text without a redundant "Plan" prefix
+- Reduce memory usage by automatically shutting down shell sessions that are no longer needed
+- Hooks configured with PascalCase event names now receive VS Code-compatible snake_case payloads with hook_event_name, session_id, and ISO 8601 timestamps
+
+## 1.0.20 - 2026-04-07
+
+- Add `copilot help monitoring` topic with OpenTelemetry configuration details and examples
+- Spinner stays active until background agents and shell commands finish, and user input remains available throughout
+- Azure OpenAI BYOK defaults to the GA versionless v1 route when no API version is configured
+- Reduce UI sluggishness during live response streaming
+- /yolo and --yolo now behave identically and /yolo state persists across /restart
+
+## 1.0.19 - 2026-04-06
+
+- /mcp enable and /mcp disable now persist across sessions
+- OpenTelemetry monitoring: subagent spans now use INTERNAL span kind, and chat spans include a `github.copilot.time_to_first_chunk` attribute (streaming only)
+- Plugin hook scripts with missing execute permissions now run correctly on macOS
+- Custom agent is properly restored when resuming a session where the agent display name differs from its filename
+- Skip IDE auto-connect when session is already in use by another client
+- Slash command timeline entries now include the command name (e.g., "Review", "Plan") for better context
+
+## 1.0.18 - 2026-04-04
+
+- New Critic agent automatically reviews plans and complex implementations using a complementary model to catch errors early (available in experimental mode for Claude models)
+- Session resume picker correctly groups sessions by branch and repository on first use
+- preToolUse hook permissionDecision 'allow' now suppresses the tool approval prompt
+- Add notification hook event that fires asynchronously on shell completion, permission prompts, elicitation dialogs, and agent completion
+
+## 1.0.17 - 2026-04-03
+
+- Built-in skills are now included with the CLI, starting with a guide for customizing Copilot cloud agent's environment
+- MCP OAuth flows now support HTTPS redirect URIs via a self-signed certificate fallback, improving compatibility with OAuth providers that require HTTPS (e.g., Slack)
+- /resume session picker loads significantly faster, especially with large session histories
+
+## 1.0.16 - 2026-04-02
+
+- SQL prompt tags no longer appear when sql tool is excluded via excludedTools or availableTools
+- MCP tool calls display tool name and parameter summary in the timeline
+- MCP server reconnects correctly with valid authentication when the working directory changes
+- Add PermissionRequest hook to allow scripts to programmatically approve or deny tool permission requests
+- Remove deprecated `marketplaces` repository setting (use `extraKnownMarketplaces` instead)
+- MCP servers load correctly after login, user switch, and /mcp reload
+- BYOK Anthropic provider now respects the configured maxOutputTokens limit
+- Remove deprecated `marketplaces` repository setting (use `extraKnownMarketplaces` instead)
+
+## 1.0.15 - 2026-04-01
+
+- Remove support for gpt-5.1-codex, gpt-5.1-codex-mini, and gpt-5.1-codex-max models
+- Copilot mascot now blinks with subtle eye animations in interactive mode
+- User switcher and `/user list` display accounts in alphabetical order
+- Add mcp.config.list, mcp.config.add, mcp.config.update, and mcp.config.remove server RPCs for managing persistent MCP server configuration
+- Add device code flow (RFC 8628) as a fallback for MCP OAuth in headless and CI environments
+- Add `/mcp auth` command and re-authentication UI for MCP OAuth servers with account switching support
+- Add postToolUseFailure hooks for tool errors and make postToolUse run only after successful tool calls
+- Add /share html command to export sessions and research reports as self-contained interactive HTML files
+- Autopilot no longer continues after pressing Escape or Ctrl+C to cancel
+- Keystrokes typed while the CLI is loading are no longer lost
+- Large tool output preview shows correct character count and up to 500 characters
+- Add Home/End and Page Up/Page Down navigation to the diff viewer
+- CLI exits immediately after a session ends instead of waiting up to 10 seconds
+- Config settings askUser, autoUpdate, storeTokenPlaintext, logLevel, skillDirectories, and disabledSkills now use camelCase names (snake_case still accepted)
+- Many settings keys now prefer camelCase names (snake_case names still work)
+- Ctrl+D no longer queues a message; use Ctrl+Q or Ctrl+Enter to queue
+- MCP servers that are slow to connect no longer block the agent from starting
+- Pasting images from the Windows clipboard now works in WSL environments
+
+## 1.0.14 - 2026-03-31
+
+- Images are correctly sent to Anthropic models when using BYOM
+- Model picker selection correctly overrides the --model flag for the current session
+- Terminal output no longer clears or jumps on error exit
+- Shift+Enter inserts a newline in terminals with Kitty keyboard protocol support
+- Show underlying error details when a Git marketplace URL fails to clone
+- Temp file operations no longer trigger unnecessary permission prompts on macOS
+- Allow SDK session participants to respond to elicitation requests via handlePendingElicitation API
+- Shell processes are cleaned up properly when a session ends
+- SDK exit_plan_mode.requested event is now always emitted, regardless of whether a direct callback is configured
+- MCP servers using Microsoft Entra ID authentication no longer show the consent screen on every login
+- Grep and glob search results return promptly when a timeout is reached
+- Keystrokes are no longer dropped when typing quickly in elicitation dialogs
+- Clipboard copy on native Windows no longer includes a stray U+FEFF character at the start of pasted text
+- Fixed --config-dir being ignored when resuming a session, causing paths to silently fall back to ~/.copilot
+- MCP servers blocked by allowlist policy are now hidden from /mcp show
+- Reasoning effort setting now applies correctly when using Bring Your Own Model (BYOM) providers
+- Ensure clear error messaging when using classic PATs
+- grep tool handles large files and long lines without running out of memory
+- MCP server OAuth authentication works when the CLI runs in ACP mode
+- Split $BROWSER on spaces
+- Pasted text is no longer corrupted when mouse support is active
+- Uninstalling a marketplace plugin removes its cached data from disk
+- Reduce CPU usage during streaming by optimizing spinner rendering and task polling
+- Reduce CLI startup time by running terminal detection, auth, and git operations in parallel
+- MCP registry lookups are more reliable with automatic retries and request timeouts
+- CLI starts faster due to V8 compile cache reducing parse and compile time on repeated invocations
+- Remove support for gemini-3-pro-preview model
+
+## 1.0.13 - 2026-03-30
+
+- Shell processes are cleaned up properly when a session ends
+- Reduce CPU usage during streaming by optimizing spinner rendering and task polling
+- SDK exit_plan_mode.requested event is now always emitted, regardless of whether a direct callback is configured
+- MCP servers using Microsoft Entra ID authentication no longer show the consent screen on every login
+- Grep and glob search results return promptly when a timeout is reached
+- Keystrokes are no longer dropped when typing quickly in elicitation dialogs
+- Clipboard copy on native Windows no longer includes a stray U+FEFF character at the start of pasted text
+- Fixed --config-dir being ignored when resuming a session, causing paths to silently fall back to ~/.copilot
+- Reduce CLI startup time by running terminal detection, auth, and git operations in parallel
+- /rewind and double-Esc now open a timeline picker that can roll back to any point in conversation history, not just the previous snapshot
+- MCP registry lookups are more reliable with automatic retries and request timeouts
+- CLI starts faster due to V8 compile cache reducing parse and compile time on repeated invocations
+- MCP servers can request LLM inference (sampling) with user approval via a new review prompt
+- MCP servers blocked by allowlist policy are now hidden from /mcp show
+- Reasoning effort setting now applies correctly when using Bring Your Own Model (BYOM) providers
+- Ensure clear error messaging when using classic PATs
+- grep tool handles large files and long lines without running out of memory
+- MCP server OAuth authentication works when the CLI runs in ACP mode
+- Split $BROWSER on spaces
+- Pasted text is no longer corrupted when mouse support is active
+- Uninstalling a marketplace plugin removes its cached data from disk
+- Remove support for gemini-3-pro-preview model
+
 ## 1.0.12 - 2026-03-26
 
 - MCP servers defined in .mcp.json start correctly when the working directory is the git root
@@ -1171,7 +2077,7 @@ To commemorate GitHub Copilot CLI reaching general availability last week, we're
 - Enabled non-interactive GHE logins by respecting the `GH_HOST` environment variable for PAT and `gh` authentication modes (fixes https://github.com/github/copilot-cli/issues/296)
 - Improved debug log collection convenience by adding a persistent `log_level` option in `~/.copilot/config`. Possible values: `["none", "error", "warning", "info", "debug", "all", "default"]`
 - Added debug logging when calls to `/model` result in Copilot API errors. This should help us diagnose some policy/model access edge cases like https://github.com/github/copilot-cli/issues/268 and https://github.com/github/copilot-cli/issues/116
-- Added `gradlew` to the list of commands whose subcommands can be whitelisted (fixes https://github.com/github/copilot-cli/issues/217#issuecomment-3393844685)
+- Added `gradlew` to the list of commands whose subcommands can be allowlisted (fixes https://github.com/github/copilot-cli/issues/217#issuecomment-3393844685)
 - Fixed a bug where sessions could enter a stuck state after a failed MCP tool call (fixes https://github.com/github/copilot-cli/issues/312)
 - Made the output of `--help` text more concise
 
@@ -1276,7 +2182,7 @@ To commemorate GitHub Copilot CLI reaching general availability last week, we're
 
 ## 0.0.332 - 2025-10-01
 
-- Switched to using per-subscription Copilot API endpoints in accordance with [GitHub's docs](https://docs.github.com/en/copilot/how-tos/administer-copilot/manage-for-enterprise/manage-access/manage-network-access) (fixes https://github.com/github/copilot-cli/issues/76)
+- Switched to using per-subscription Copilot API endpoints in accordance with [GitHub's docs](https://docs.github.com/copilot/how-tos/administer-copilot/manage-for-enterprise/manage-access/manage-network-access) (fixes https://github.com/github/copilot-cli/issues/76)
 - Fixed a bug where `/user [list | show | switch]` did not include users signed in from all authentication modes (fixes https://github.com/github/copilot-cli/issues/58)
 - Fixed a bug where switching to another user with `/user switch` did not take effect in the GitHub MCP server
 - Improved the screenreader experience by disabling the scrollbar in the `@` file picker, the `--resume` session picker, and the `/` command picker
